@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Covid-19 Cases',
       theme: ThemeData(
-        fontFamily: "Poppinsgi",
+        fontFamily: "Poppins",
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(),

@@ -1,0 +1,1 @@
+const ERROR_DOWNLOADINGS = "Error occur";
