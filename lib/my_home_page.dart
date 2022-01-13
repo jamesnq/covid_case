@@ -12,9 +12,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String? myCountry;
   CountryInfo? countryInfo;
+  CountryInfo1? countryInfo1;
   ApiServices apiServices = ApiServices();
   List<CountryInfo> countryList = [];
   bool loading = true;
+  String _selectedCountry = 'Vietnam';
 
   Future getCountryList() async {
     var countryResponse = await apiServices.fetchCountry();
@@ -22,6 +24,21 @@ class _MyHomePageState extends State<MyHomePage> {
       countryList = countryResponse;
       loading = false;
     });
+  }
+
+  void _runFilter(String value) {
+    List<CountryInfo> result = [];
+    result = countryList
+        .where((country) => country.country!.contains(value))
+        .toList();
+    if (result.isNotEmpty) {
+      countryInfo = CountryInfo(
+          cases: result[0].cases,
+          deaths: result[0].deaths,
+          recovered: result[0].recovered);
+      countryInfo1 =
+          CountryInfo1(flag: result[0].countryInfo!.flag);
+    }
   }
 
   @override
@@ -34,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: Column(
         children: [
@@ -90,19 +108,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Expanded(
-                  child: DropdownButton<String>(
-                    value: countryInfo!.country,
+                  child: DropdownButton(
+                    value: _selectedCountry,
                     hint: const Text("Select Country"),
                     underline: const SizedBox(),
                     isExpanded: true,
                     items: countryList.map((CountryInfo item) {
-                      return DropdownMenuItem(
-                          child: Text(item.country),
+                      return DropdownMenuItem<String>(
+                        value: item.country,
+                        child: Text(item.country!),
                       );
                     }).toList(),
                     onChanged: (newValue) {
                       setState(() {
-                        myCountry = newValue;
+                        _runFilter(newValue.toString());
+                        _selectedCountry = newValue.toString();
                       });
                     },
                   ),
@@ -111,68 +131,125 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
 
-          // //Infor
-          // Column(
-          //   children: [
-          //     Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //       children: [
-          //         Container(
-          //           width: 160,
-          //           height: 160,
-          //           decoration: BoxDecoration(
-          //               color: Colors.white,
-          //               borderRadius: BorderRadius.circular(20),
-          //               border: Border.all(
-          //                 color: const Color(0xFFE5E5E5),
-          //               )
-          //           ),
-          //         ),
-          //
-          //         Container(
-          //           width: 160,
-          //           height: 160,
-          //           decoration: BoxDecoration(
-          //               color: Colors.white,
-          //               borderRadius: BorderRadius.circular(20),
-          //               border: Border.all(
-          //                 color: const Color(0xFFE5E5E5),
-          //               )
-          //           ),
-          //         )
-          //       ],
-          //     ),
-          //     const SizedBox(height: 15,),
-          //     Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //       children: [
-          //         Container(
-          //           width: 160,
-          //           height: 160,
-          //           decoration: BoxDecoration(
-          //               color: Colors.white,
-          //               borderRadius: BorderRadius.circular(20),
-          //               border: Border.all(
-          //                 color: const Color(0xFFE5E5E5),
-          //               )
-          //           ),
-          //         ),
-          //
-          //         Container(
-          //           width: 160,
-          //           height: 160,
-          //           decoration: BoxDecoration(
-          //               color: Colors.white,
-          //               borderRadius: BorderRadius.circular(20),
-          //               border: Border.all(
-          //                 color: const Color(0xFFE5E5E5),
-          //               )
-          //           ),
-          //         )
-          //       ],
-          //     ),
-          //   ],
-          // )
+          //Infor
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(15),
+                    width: 160,
+                    height: 160,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color(0xFFE5E5E5),
+                        )),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Cases",
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            countryInfo == null
+                                ? "null"
+                                : countryInfo!.cases.toString(),
+                            style: const TextStyle(fontSize: 28),
+                          ),
+                        ]),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(15),
+                    width: 160,
+                    height: 160,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color(0xFFE5E5E5),
+                        )),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Deaths",
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            countryInfo == null
+                                ? "null"
+                                : countryInfo!.deaths.toString(),
+                            style: const TextStyle(fontSize: 28),
+                          ),
+                        ]),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(15),
+                    width: 160,
+                    height: 160,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color(0xFFE5E5E5),
+                        )),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Recovered",
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            countryInfo == null
+                                ? "null"
+                                : countryInfo!.recovered.toString(),
+                            style: const TextStyle(fontSize: 28),
+                          ),
+                        ]),
+                  ),
+                  Container(
+                    width: 160,
+                    height: 160,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color(0xFFE5E5E5),
+                        ),
+                      image: DecorationImage(
+                        image: NetworkImage(countryInfo1 == null
+                            ? "https://disease.sh/assets/img/flags/vn.png"
+                            : countryInfo1!.flag.toString()),
+                        fit: BoxFit.cover,
+                      )
+                    ),
+                  )
+                ],
+              ),
+            ],
+          )
         ],
       ),
     );
